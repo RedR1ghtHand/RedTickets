@@ -1,0 +1,16 @@
+[project]
+name = "discord-ticket-bot"
+version = "0.1.0"
+description = "A simple Discord ticket bot"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "discord.py>=2.4.0",
+    "python-dotenv>=1.0.1",
+    "pyyaml>=6.0.1",
+]
+
+[tool.uv]
+dev-dependencies = []

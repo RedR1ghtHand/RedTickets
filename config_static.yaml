@@ -1,0 +1,49 @@
+channels:
+  - reason: "technical issues"
+    id: "1432408337055613009"
+    icon: "🛠️"
+  
+  - reason: "game-related questions"
+    id: "1432408383524180130"
+    icon: "🎮"
+
+  - reason: "donations & payments"
+    id: "1432408434741088307"
+    icon: "💰"
+
+  - reason: "report or complaint"
+    id: "1432424870993727488"
+    icon: "🚩"
+
+
+messages:
+  embeds:
+    ticket_reason_select:
+      title: "🎟️ Need help?"
+      description : "Please create a ticket using select menu below: "
+      option: "Create a ticket with reason: {reason}"
+      placeholder: "🎟️ Choose your ticket reason..."
+      color: red
+        
+    ticket_created:
+      name: "{icon}-ticket-{name} "
+      topic: "{reason} | {user} | {date} "
+      title: "🎟️ Ticket: {reason} "
+      description: "**Nickname:** {name} \n**Time of event/incident:** {time} \n\n **Detailed description**: \n{desc} "
+      color: orange
+      mention: "{user} created a ticket: "
+      channel_mention: "Ticket created! Your channel - {channel}"
+
+  modals:
+    create_ticket:
+      title: "Ticket:{reason}"
+      label_name: "Your in-game Name"
+      label_data: "Time of event/incident"
+      label_desc: "Detailed description"
+      placeholder_desc: "Please explain in detail what happened/is not working or what request you would like to make..."
+      desc_min_length: 4
+      desc_max_length: 1600
+
+  buttons:
+    close: "Close ticket"
+    move: "Move ticket"
