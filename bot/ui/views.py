@@ -115,4 +115,3 @@ class TicketControlView(ui.View):
                 ticket_creator=ticket_creator
             )
         )
-
