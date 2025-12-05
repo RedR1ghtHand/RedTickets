@@ -251,10 +251,10 @@ class ChangeReasonModal(ui.Modal):
             title=get_message("messages.embeds.ticket_moved.title"),
             description=get_message(
                 "messages.embeds.ticket_moved.description",
-                creator=self.ticket_creator,
-                moder=interaction.user
+                creator=self.ticket_creator.display_name,
+                moder=interaction.user.display_name
             ),
             color=color,
         )
-        await interaction.channel.send(f"@here!", embed=embed)
-        
+        await interaction.response.send_message(f"@here!", embed=embed)
+          
