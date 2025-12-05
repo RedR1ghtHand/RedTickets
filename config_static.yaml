@@ -35,6 +35,9 @@ messages:
 
     ticket_moved:
       name: "{new}←{old}"
+      title: "Ticket moved!"
+      description: "Created by: `{creator}`\nMoved by: `{moder}`"
+      color: yellow
 
     business_hours:
       title: "**Oops! You've reached us after hours.**"

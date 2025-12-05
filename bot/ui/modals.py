@@ -2,7 +2,8 @@ from datetime import datetime
 from typing import Optional
 
 import disnake
-from disnake import ModalInteraction, TextInputStyle, ui
+from disnake import ModalInteraction, TextInputStyle, mentions, ui, user
+from disnake.ui.select import mentionable
 
 from bot import BusinessHours
 from utils import get_message
@@ -245,7 +246,15 @@ class ChangeReasonModal(ui.Modal):
 
         await interaction.channel.edit(name=get_message("messages.embeds.ticket_moved.name", new=new_reason_ctx["icon"], old=interaction.channel.name))
 
-        await interaction.response.send_message(
-            f"Ticket moved to new category: **{new_category.name}**", ephemeral=True
+        color = getattr(disnake.Color, get_message("messages.embeds.ticket_moved.color"))()
+        embed = disnake.Embed(
+            title=get_message("messages.embeds.ticket_moved.title"),
+            description=get_message(
+                "messages.embeds.ticket_moved.description",
+                creator=self.ticket_creator,
+                moder=interaction.user
+            ),
+            color=color,
         )
+        await interaction.channel.send(f"@here!", embed=embed)
         
