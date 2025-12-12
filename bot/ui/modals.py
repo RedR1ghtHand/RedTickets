@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from typing import Optional
 
@@ -12,19 +13,14 @@ from .views import TicketControlView
 
 
 class TicketModal(ui.Modal):
-    def __init__(
-        self,
-        *,
-        business_hours: Optional[BusinessHours] = None,
-    ):
-
+    def __init__(self, *, business_hours: Optional[BusinessHours] = None):
         channels_config = get_message("channels")
         select_options = [
             disnake.SelectOption(
                 label=field["reason"].capitalize(),
                 value=str(field["id"]),
                 description=get_message(
-                    "messages.embeds.ticket_reason_select.option", reason=field["reason"]
+                    "messages.modals.create_ticket.description_reason", reason=field["reason"]
                 ),
                 emoji=field["icon"],
             )
@@ -42,16 +38,6 @@ class TicketModal(ui.Modal):
             options=select_options,
         )
 
-        self.name = ui.TextInput(
-            label=get_message("messages.modals.create_ticket.label_name"),
-            custom_id="ticket_name",
-            required=True,
-        )
-        self.data = ui.TextInput(
-            label=get_message("messages.modals.create_ticket.label_data"),
-            custom_id="ticket_data",
-            required=False,
-        )
         self.description = ui.TextInput(
             label=get_message("messages.modals.create_ticket.label_desc"),
             style=TextInputStyle.paragraph,
@@ -67,15 +53,13 @@ class TicketModal(ui.Modal):
                 text=reason_label_text,
                 component=self.reason_select,
             ),
-            self.name,
-            self.data,
             self.description,
         ]
 
         super().__init__(
             title=get_message(
                 "messages.modals.create_ticket.title",
-                reason=get_message("messages.embeds.ticket_reason_select.title"),
+                reason=get_message("messages.embeds.create_ticket.title"),
             ),
             components=components,
         )
@@ -108,9 +92,6 @@ class TicketModal(ui.Modal):
             return
 
         category = guild.get_channel(int(target_channel["id"]))
-
-        name_value = interaction.text_values.get(self.name.custom_id) or ""
-        data_value = interaction.text_values.get(self.data.custom_id) or ""
         desc_value = interaction.text_values.get(self.description.custom_id) or ""
 
         if not category or not isinstance(category, disnake.CategoryChannel):
@@ -123,7 +104,7 @@ class TicketModal(ui.Modal):
             name=get_message(
                 "messages.embeds.ticket_created.name",
                 icon=target_channel["icon"],
-                name=name_value.lower().replace(" ", "-") or "ticket",
+                name=interaction.user.display_name.replace(" ", "-") or "#user",
             ),
             topic=get_message(
                 "messages.embeds.ticket_created.topic",
@@ -143,8 +124,6 @@ class TicketModal(ui.Modal):
             ),
             description=get_message(
                 "messages.embeds.ticket_created.description",
-                name=name_value or "-",
-                time=data_value or "-",
                 desc=desc_value or "-",
             ),
             color=color,
@@ -188,14 +167,14 @@ class ChangeReasonModal(ui.Modal):
             disnake.SelectOption(
                 label=field["reason"].capitalize(),
                 value=str(field["id"]),
-                description=get_message("messages.embeds.ticket_reason_select.option", reason=field["reason"]),
+                description=get_message("messages.modals.move_ticket.description_reason", reason=field["reason"]),
                 emoji=field["icon"]
             )
             for field in get_message("channels") if field["id"] != current_category_id
         ]
         self.reason_select = ui.StringSelect(
             custom_id="change_reason_select_value",
-            placeholder="Select new ticket reason...",
+            placeholder=get_message("messages.modals.move_ticket.placeholder_reason"),
             min_values=1,
             max_values=1,
             options=select_options,
@@ -203,58 +182,58 @@ class ChangeReasonModal(ui.Modal):
 
         components = [
             ui.Label(
-                text="New ticket reason",
+                text=get_message("messages.modals.move_ticket.label_reason"),
                 component=self.reason_select,
             )
         ]
 
         super().__init__(
-            title="Change ticket reason",
+            title=get_message("messages.modals.move_ticket.title"),
             components=components,
             custom_id=custom_id,
             timeout=timeout,
         )
 
     async def callback(self, interaction: ModalInteraction):
+        await interaction.response.defer(ephemeral=True)
+
         new_reason_ctx = next(
-            (ch for ch in self.channels_config if str(ch["id"]) == interaction.values["change_reason_select_value"][0]),
+            (ch for ch in self.channels_config
+            if str(ch["id"]) == interaction.values["change_reason_select_value"][0]),
             None,
         )
-
         if new_reason_ctx is None:
-            await interaction.response.send_message(
-                "You must choose a new ticket reason.", ephemeral=True
-            )
+            await interaction.followup.send("You must choose a new ticket reason.", ephemeral=True)
             return
 
         guild = interaction.guild
         new_category = guild.get_channel(int(new_reason_ctx["id"])) if guild else None
-
-        if not new_category or not isinstance(new_category, disnake.CategoryChannel):
-            await interaction.response.send_message(
-                "Could not find the selected ticket category.", ephemeral=True
-            )
+        if not isinstance(new_category, disnake.CategoryChannel):
+            await interaction.followup.send("Could not find the selected ticket category.", ephemeral=True)
             return
-        
-        await interaction.channel.move(
-            category=new_category,
-            end=True,
-            sync_permissions=True,
+
+        await interaction.channel.move(category=new_category, end=True, sync_permissions=True)
+
+        rename = get_message(
+            "messages.embeds.ticket_moved.name",
+            new=new_reason_ctx["icon"],
+            old=interaction.channel.name,
         )
-        
-        await interaction.channel.set_permissions(target=self.ticket_creator, view_channel=True)
-
-        await interaction.channel.edit(name=get_message("messages.embeds.ticket_moved.name", new=new_reason_ctx["icon"], old=interaction.channel.name))
-
         color = getattr(disnake.Color, get_message("messages.embeds.ticket_moved.color"))()
         embed = disnake.Embed(
             title=get_message("messages.embeds.ticket_moved.title"),
             description=get_message(
                 "messages.embeds.ticket_moved.description",
                 creator=self.ticket_creator.display_name,
-                moder=interaction.user.display_name
+                moder=interaction.user.display_name,
             ),
             color=color,
         )
-        await interaction.response.send_message(f"@here!", embed=embed)
+
+        await asyncio.gather(
+            interaction.channel.set_permissions(target=self.ticket_creator, view_channel=True),
+            interaction.channel.edit(name=rename),
+        )
+
+        await interaction.followup.send("@here!", embed=embed)
           

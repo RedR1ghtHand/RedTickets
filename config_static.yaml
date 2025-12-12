@@ -17,18 +17,16 @@ channels:
   
 messages:
   embeds:
-    ticket_reason_select:
+    create_ticket:
       title: "🎟️ Need help?"
       description : "Please create a ticket using select menu below: "
-      option: "Create a ticket with reason: {reason}"
-      placeholder: "🎟️ Choose your ticket reason..."
       color: red
         
     ticket_created:
       name: "{icon}-{name}-ticket"
       topic: "{reason} | {user} | {date} "
       title: "🎟️ Ticket: {reason} "
-      description: "**Nickname:** {name} \n**Time of event/incident:** {time} \n\n **Detailed description**: \n{desc} "
+      description: "\n\n**Detailed description**: \n{desc} "
       color: orange
       mention: "{user} created a ticket: "
       channel_mention: "Ticket created! Your channel - {channel}"
@@ -60,18 +58,22 @@ messages:
       title: "New ticket"
       label_reason: "Ticket reason"
       placeholder_reason: "Please choose a ticket reason..."
-      label_name: "Your in-game Name"
-      label_data: "Time of event/incident"
+      description_reason: "Create a ticket with reason: {reason}"
       label_desc: "Detailed description"
       placeholder_desc: "Please explain in detail what happened/is not working or what request you would like to make..."
       desc_min_length: 4
       desc_max_length: 1600
 
     move_ticket:
-      title:
+      title: "Move Ticket"
+      label_reason: "New ticket reason"
+      placeholder_reason: "Please choose new ticket reason"
+      description_reason: "Set new ticket reason: {reason}"
 
   buttons:
+    create_ticket: "Create Ticket"
     close_ticket: "Close ticket"
+    close_confirm: "Confirm"
     close_ticket_no_permission: "You don't have permission to close tickets"
     move_ticket: "Move ticket"
     move_ticket_no_permission: "You don't have permission to move tickets"

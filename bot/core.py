@@ -38,10 +38,10 @@ async def send_main_message(ctx):
     except Exception as e:
         logging.error(f"Could not purge channel: {e}")
 
-    color = getattr(disnake.Color, get_message("messages.embeds.ticket_reason_select.color"))()
+    color = getattr(disnake.Color, get_message("messages.embeds.create_ticket.color"))()
     embed = disnake.Embed(
-        title=get_message("messages.embeds.ticket_reason_select.title"),
-        description=get_message("messages.embeds.ticket_reason_select.description"),
+        title=get_message("messages.embeds.create_ticket.title"),
+        description=get_message("messages.embeds.create_ticket.description"),
         color=color,
     )
     await channel.send(embed=embed, view=TicketView())
