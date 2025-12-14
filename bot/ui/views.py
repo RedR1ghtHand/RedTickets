@@ -20,38 +20,6 @@ class TicketView(ui.View):
 
         await interaction.response.send_modal(TicketModal())
 
-# class ChangeReasonSelect(ui.Select):
-#     def __init__(self, current_category_id: str):
-#         self.current_category_id = current_category_id
-#         options = [
-#             disnake.SelectOption(
-#                 label=field["reason"].capitalize(),
-#                 description=get_message("messages.embeds.move_ticket.description_reason", reason=field["reason"]),
-#                 emoji=field["icon"]
-#             )
-#             for field in get_message("channels") if field["id"] != current_category_id
-#         ]
-
-#         super().__init__(
-#             placeholder="Please, choose new ticket reason...",
-#             options=options,
-#             min_values=1,
-#             max_values=1,
-#             custom_id="change_reason_select"
-#         )
-
-#     async def callback(self, interaction: Interaction):
-#         from .modals import ChangeReasonModal
-#         await interaction.response.send_modal(
-#             ChangeReasonModal(current_category_id=self.current_category_id)
-#         )
-
-
-# class ChangeReasonView(ui.View):
-#     def __init__(self, current_category_id):
-#         super().__init__(timeout=None)
-#         self.add_item(ChangeReasonSelect(current_category_id=current_category_id))
-
 
 class ConfirmCloseView(ui.View):
     def __init__(self):
